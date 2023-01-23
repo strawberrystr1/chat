@@ -1,16 +1,12 @@
-import { useEffect } from 'react';
+import { ReactNode } from 'react';
+import { Container, CssBaseline } from '@mui/material';
 
-function App() {
-  const ws = new WebSocket('ws://localhost:3000');
-  useEffect(() => {
-    ws.onopen = () => console.log('connection open');
-
-    ws.onmessage = (msg: MessageEvent<string>) => console.log(msg);
-  }, []);
+function App({ children }: { children: ReactNode }) {
   return (
-    <div className="App">
-      <button onClick={() => ws.send('hello from front')}>asdasd</button>
-    </div>
+    <Container sx={{ height: '100%', width: '100%' }} maxWidth="xl">
+      <CssBaseline />
+      {children}
+    </Container>
   );
 }
 

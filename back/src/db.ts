@@ -1,13 +1,13 @@
 import { Sequelize } from "sequelize";
 
 const dbClient = new Sequelize(
-  process.env.PGDATABASE as string,
-  process.env.USER as string,
-  process.env.PASSWORD as string,
+  'chat',
+  'postgres',
+  'password',
   {
     dialect: "postgres",
-    host: process.env.DATABASE_URL as string,
-    port: +(process.env.PGPORT as string),
+    host: 'localhost',
+    port: 5432,
     logging: false
   }
 );

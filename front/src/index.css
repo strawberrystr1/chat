@@ -1,0 +1,9 @@
+body {
+  background: hsla(17, 95%, 50%, 1);
+  background: linear-gradient(90deg, hsla(17, 95%, 50%, 1) 0%, hsla(42, 94%, 57%, 1) 100%);
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+}
