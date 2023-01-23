@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getUserMessages } from "../services/message.service";
-import { HTTPCodes } from "../types/enums";
+import { HTTPCodes } from "../types/types";
 
 export const getUserMessagesController = async (
   req: Request,

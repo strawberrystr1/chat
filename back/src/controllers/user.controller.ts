@@ -1,10 +1,24 @@
 import { Request, Response } from "express";
+import { getUserMessages } from "../services/message.service";
 import { getAllUsers, loginUser } from "../services/user.service";
-import { HTTPCodes } from "../types/enums";
+import { HTTPCodes } from "../types/types";
 
 export const handleGetAllUsers = async (req: Request, res: Response) => {
   try {
+    const { messages } = req.query;
+
     const users = await getAllUsers();
+
+    if (messages) {
+      const { id } = req.query;
+
+      if (id) {
+        const messages = await getUserMessages(id as string);
+
+        res.json({ users, messages });
+        return;
+      }
+    }
 
     res.json(users);
   } catch (e) {

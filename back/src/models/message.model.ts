@@ -22,7 +22,7 @@ const Message = dbClient.define(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: Date.now()
-    },
+    }
   },
   {
     timestamps: false,

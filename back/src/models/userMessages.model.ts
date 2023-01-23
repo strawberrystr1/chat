@@ -11,14 +11,16 @@ const UserMessages = dbClient.define(
       references: {
         model: User,
         key: "id"
-      }
+      },
+      unique: false,
     },
     messageId: {
       type: DataTypes.INTEGER,
       references: {
         model: Message,
         key: "id"
-      }
+      },
+      unique: false,
     },
   },
   { timestamps: false, freezeTableName: true }

@@ -1,8 +1,9 @@
 import { Express } from "express";
 import ws from "ws";
 import { createMessage } from "./services/message.service";
+import { IClient } from "./types/types";
 
-const CREATE_MESSAGE = "message";
+const clients: IClient[] = [];
 
 export const wsServer = (expressServer: Express) => {
   const wsServer = new ws.Server({
@@ -11,9 +12,14 @@ export const wsServer = (expressServer: Express) => {
     path: "/"
   });
 
-  wsServer.on("connection", socket => {
+  wsServer.on("connection", (socket, req) => {
     socket.on("message", async msg => {
       const data = JSON.parse(msg.toString());
+
+      if (data.user) {
+        clients.push({ id: data.user, socket });
+        return;
+      }
 
       const message = await createMessage(
         data.title,
@@ -22,9 +28,9 @@ export const wsServer = (expressServer: Express) => {
         data.to
       );
 
-      wsServer.clients.forEach(client => {
-        if (client !== socket) {
-          client.send(JSON.stringify(message));
+      clients.forEach(client => {
+        if (client.id === data.from || client.id === data.to) {
+          client.socket.send(JSON.stringify(message));
         }
       });
     });

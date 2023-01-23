@@ -21,3 +21,9 @@ export const getAllUsers = async () => {
 
   return users;
 };
+
+export const getUsersById = async (ids: number[]) => {
+  const users = await User.findAll({ where: { id: ids } });
+
+  return users.map(e => e.toJSON());
+};

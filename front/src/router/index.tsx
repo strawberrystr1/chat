@@ -15,10 +15,10 @@ export const router = createBrowserRouter([
     loader: async ({ params }) => {
       const { id } = params;
 
-      const response = await fetch(`${API_URL}/message?id=${id}`);
-      const userMessages = await response.json();
+      const response = await fetch(`${API_URL}/user?messages=true&id=${id}`);
+      const data = await response.json();
 
-      return userMessages;
+      return data;
     },
   },
 ]);
