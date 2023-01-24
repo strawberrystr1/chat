@@ -41,7 +41,7 @@ export const getUserMessages = async (userId: string) => {
           {
             model: User,
             through: {
-              attributes: []
+              attributes: ["destination", "self"]
             },
             attributes: ["id", "name"]
           }
@@ -53,7 +53,45 @@ export const getUserMessages = async (userId: string) => {
     })
   )?.toJSON() as IUserWithMessages;
 
+  return transformUserData(user);
+};
+
+const updateJunctionTable = async (
+  fromId: number,
+  toId: number,
+  messageId: number
+) => {
+  const from = (await User.findByPk(fromId))?.toJSON();
+  const to = (await User.findByPk(toId))?.toJSON();
+
+  if (fromId === toId) {
+    await UserMessages.create({
+      userId: from.id,
+      messageId: messageId,
+      self: true
+    });
+  } else {
+    await UserMessages.create({
+      userId: from.id,
+      messageId: messageId,
+      destination: to.id
+    });
+    await UserMessages.create({
+      userId: to.id,
+      messageId: messageId
+    });
+  }
+};
+
+const transformUserData = (user: IUserWithMessages): IExpandedMessage[] => {
   const expandedMessages: IExpandedMessage[] = user.messages
+    .filter(
+      e =>
+        e &&
+        e.users.find(
+          u => u.user_messages.destination === user.id || u.user_messages.self
+        )
+    )
     .map(msg => {
       const { id, time, title, message, users } = msg;
 
@@ -62,30 +100,13 @@ export const getUserMessages = async (userId: string) => {
         time,
         title,
         message,
-        from: users.find(e => e.id === +userId)?.name as string,
-        to: users.find(e => e.id !== +userId)?.name as string
+        from: users.find(e => e.id !== user.id || e.user_messages.self)
+          ?.name as string,
+        to: users.find(e => e.id === user.id || e.user_messages.self)
+          ?.name as string
       };
     })
     .sort((a, b) => b.id - a.id);
 
   return expandedMessages;
-};
-
-const updateJunctionTable = async (
-  fromId: number,
-  toId: number,
-  messageId: number
-) => {
-  const from = await User.findByPk(fromId);
-  const to = await User.findByPk(toId);
-
-  await UserMessages.create({
-    userId: from?.toJSON().id,
-    messageId: messageId
-  });
-
-  await UserMessages.create({
-    userId: to?.toJSON().id,
-    messageId: messageId
-  });
 };

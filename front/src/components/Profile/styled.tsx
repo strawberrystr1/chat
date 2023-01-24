@@ -9,7 +9,6 @@ export const Wrapper = styled(Box)`
 `;
 
 export const SideWrapper = styled(Box)`
-  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,4 +25,10 @@ export const Avatar = styled(Box)`
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+`;
+
+export const MessagesBlock = styled(Box)`
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 `;

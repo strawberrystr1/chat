@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { LoginForm } from '../components/LoginForm';
 import { Profile } from '../components/Profile';
 import { API_URL } from '../constants';
+import { IUsersWithMessages } from '../types/user';
 
 export const router = createBrowserRouter([
   {
@@ -16,9 +17,11 @@ export const router = createBrowserRouter([
       const { id } = params;
 
       const response = await fetch(`${API_URL}/user?messages=true&id=${id}`);
-      const data = await response.json();
+      const data: IUsersWithMessages = await response.json();
 
-      return data;
+      const currentUser = data.users.find(e => e.id === +(id as string));
+
+      return { ...data, currentUser };
     },
   },
 ]);

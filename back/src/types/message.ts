@@ -1,4 +1,4 @@
-import { IUser } from "./user";
+import { IUserWithJunctionDestination } from "./user";
 
 export interface IMessage {
   id: number;
@@ -8,7 +8,7 @@ export interface IMessage {
 }
 
 export interface IMessageWithUsers extends IMessage {
-  users: IUser[];
+  users: IUserWithJunctionDestination[];
 }
 
 export interface IExpandedMessage extends IMessage {

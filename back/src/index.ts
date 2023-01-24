@@ -27,13 +27,6 @@ const startServer = () => {
 
       User.belongsToMany(Message, { through: UserMessages });
       Message.belongsToMany(User, { through: UserMessages });
-      // await User.sync();
-      // await Message.sync();
-      // await UserMessages.sync();
-      // User.hasMany(UserMessages);
-      // UserMessages.belongsTo(User);
-      // Message.hasMany(UserMessages);
-      // UserMessages.belongsTo(Message);
 
       await dbClient.authenticate();
       await dbClient.sync({ alter: true });

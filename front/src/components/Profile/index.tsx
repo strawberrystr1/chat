@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import { Alert, Button, Snackbar, Typography } from '@mui/material';
+import { Alert, Avatar, Snackbar, Typography } from '@mui/material';
 
 import { SOCKET_URL } from '../../constants';
 import { IMessage } from '../../types/message';
-import { IUsersWithMessages } from '../../types/user';
+import { IProfilePageData } from '../../types/user';
 import MessageItem from '../MessageItem';
 import { SendMessageForm } from '../SendMessageForm';
 
-import { Avatar, SideWrapper, Wrapper } from './styled';
+import { MessagesBlock, SideWrapper, Wrapper } from './styled';
 
 type SnackSeverity = 'error' | 'info' | 'success';
 
 export const Profile = () => {
-  const { messages, users } = useLoaderData() as IUsersWithMessages;
+  const { messages, users, currentUser } = useLoaderData() as IProfilePageData;
 
   const [messagesState, setMessagesState] = useState<IMessage[]>(() => messages);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSnackOpen, setIsSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState('');
   const [messageType, setMessageType] = useState<SnackSeverity>('info');
+  const [isMessageReceived, setIsMessageReceived] = useState(false);
 
   const ws = new WebSocket(SOCKET_URL);
 
@@ -28,9 +28,7 @@ export const Profile = () => {
       setIsSnackOpen(true);
       setSnackMessage('Connection open');
       setMessageType('success');
-      ws.send(JSON.stringify({ user: users.find(e => e.name === messages[0].from)?.id }));
-      // добавить бзера в стор или взять с роутера
-      
+      ws.send(JSON.stringify({ user: currentUser.id }));
     };
 
     ws.onerror = () => {
@@ -46,23 +44,19 @@ export const Profile = () => {
     };
 
     ws.onmessage = msg => {
-      setMessagesState(prev => [...prev, JSON.parse(msg.data)]);
+      setMessagesState(prev => [JSON.parse(msg.data), ...prev]);
       setIsSnackOpen(true);
-      setSnackMessage('Message received');
+      setSnackMessage(JSON.parse(msg.data).message);
       setMessageType('info');
+      setIsMessageReceived(true);
     };
   }, []);
 
   const resetSnack = () => {
     setIsSnackOpen(false);
     setSnackMessage('');
+    setIsMessageReceived(false);
   };
-
-  const handleClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeHandler = () => setIsModalOpen(false);
 
   const sendMessage = (title: string, message: string, to: number) => {
     if (ws.OPEN === 1) {
@@ -71,7 +65,7 @@ export const Profile = () => {
           title,
           message,
           to,
-          from: users.find(e => e.name === messages[0].from)?.id,
+          from: currentUser.id,
         })
       );
       setIsSnackOpen(true);
@@ -82,38 +76,35 @@ export const Profile = () => {
 
   return (
     <Wrapper>
-      <SideWrapper>
-        {/* Add user id from storage */}
+      <SideWrapper sx={{ maxWidth: '20%' }}>
         <Avatar>
-          {/* <Typography fontSize={30}>{messagesState[0].from[0].toUpperCase()}</Typography> */}
+          <Typography fontSize={30}>{currentUser.name[0].toUpperCase()}</Typography>
         </Avatar>
+        <Typography fontSize={20}>ID: {currentUser.id}</Typography>
         <Typography fontSize={30} sx={{ mb: 3 }}>
-          {/* {messagesState[0].from} */}
+          {currentUser.name}
         </Typography>
-        <Button size="large" variant="contained" onClick={handleClick}>
-          Text to...
-        </Button>
       </SideWrapper>
       <SideWrapper>
-        {messagesState.map(msg => (
-          <MessageItem key={msg.id} message={msg} />
-        ))}
+        <SendMessageForm users={users} sendMessage={sendMessage} />
+        <MessagesBlock>
+          {messagesState.map(msg => (
+            <MessageItem key={msg.id} message={msg} />
+          ))}
+        </MessagesBlock>
       </SideWrapper>
-      <SendMessageForm
-        isOpen={isModalOpen}
-        handleClose={closeHandler}
-        users={users}
-        sendMessage={sendMessage}
-      />
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={isSnackOpen}
         autoHideDuration={2000}
         onClose={resetSnack}
-        sx={{ width: 300, height: 70 }}
+        sx={{ width: 400 }}
       >
         <Alert onClose={resetSnack} severity={messageType} sx={{ width: '100%' }}>
-          {snackMessage}
+          {isMessageReceived && (
+            <Typography fontSize={18}>Message from: {messagesState[0].from}</Typography>
+          )}
+          {snackMessage.slice(0, 40)}
         </Alert>
       </Snackbar>
     </Wrapper>

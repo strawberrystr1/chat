@@ -1,5 +1,5 @@
-export const API_URL = 'http://localhost:4000';
+export const API_URL = 'https://astonishing-dinner-production.up.railway.app';
 export const JSON_HEADERS = {
   'Content-Type': 'application/json',
 };
-export const SOCKET_URL = 'ws://localhost:4000';
+export const SOCKET_URL = 'ws://astonishing-dinner-production.up.railway.app/';

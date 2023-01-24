@@ -8,3 +8,10 @@ export interface IUser {
 export interface IUserWithMessages extends IUser {
   messages: IMessageWithUsers[];
 }
+
+export interface IUserWithJunctionDestination extends IUser {
+  user_messages: {
+    destination: number;
+    self: boolean;
+  };
+}

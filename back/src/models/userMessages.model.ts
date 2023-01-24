@@ -12,7 +12,7 @@ const UserMessages = dbClient.define(
         model: User,
         key: "id"
       },
-      unique: false,
+      unique: false
     },
     messageId: {
       type: DataTypes.INTEGER,
@@ -20,8 +20,17 @@ const UserMessages = dbClient.define(
         model: Message,
         key: "id"
       },
-      unique: false,
+      unique: false
     },
+    destination: {
+      type: DataTypes.INTEGER,
+      unique: false
+    },
+    self: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    }
   },
   { timestamps: false, freezeTableName: true }
 );

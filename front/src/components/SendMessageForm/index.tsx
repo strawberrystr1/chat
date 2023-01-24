@@ -2,7 +2,6 @@ import { ChangeEvent, FC, useState } from 'react';
 import {
   Autocomplete,
   Button,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -12,10 +11,10 @@ import {
 
 import { IUser } from '../../types/user';
 
-import { TextArea } from './styled';
+import { TextArea, Wrapper } from './styled';
 import { IProps } from './types';
 
-export const SendMessageForm: FC<IProps> = ({ isOpen, handleClose, users, sendMessage }) => {
+export const SendMessageForm: FC<IProps> = ({ users, sendMessage }) => {
   const [selectValueVisible, setSelectValueVisible] = useState('');
   const [selectValue, setSelectValue] = useState<IUser | null>(null);
   const [title, setTitle] = useState('');
@@ -23,13 +22,6 @@ export const SendMessageForm: FC<IProps> = ({ isOpen, handleClose, users, sendMe
 
   const handleTextarea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setTextValue(e.target.value);
-  };
-
-  const handleSend = () => {
-    if (selectValue) {
-      sendMessage(title, textValue, selectValue.id);
-      handleClose();
-    }
   };
 
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,16 +33,24 @@ export const SendMessageForm: FC<IProps> = ({ isOpen, handleClose, users, sendMe
     setSelectValueVisible('');
     setTitle('');
     setTextValue('');
-    handleClose();
   };
 
+  const handleSend = () => {
+    if (selectValue) {
+      sendMessage(title, textValue, selectValue.id);
+      handleCancel();
+    }
+  };
+
+  const isSendButtonDisabled = !textValue || !selectValue || !title;
+
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Wrapper>
       <DialogTitle>Send message to...</DialogTitle>
       <DialogContent>
         <Autocomplete
           disablePortal={true}
-          sx={{ width: 500 }}
+          sx={{ width: '100%' }}
           options={users}
           getOptionLabel={option => option.name}
           renderInput={params => <TextField {...params} label="Username" margin="dense" />}
@@ -75,12 +75,17 @@ export const SendMessageForm: FC<IProps> = ({ isOpen, handleClose, users, sendMe
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} color="error" variant="contained">
-          Cancel
+          reset
         </Button>
-        <Button onClick={handleSend} color="success" variant="contained">
+        <Button
+          onClick={handleSend}
+          color="success"
+          variant="contained"
+          disabled={isSendButtonDisabled}
+        >
           Send
         </Button>
       </DialogActions>
-    </Dialog>
+    </Wrapper>
   );
 };

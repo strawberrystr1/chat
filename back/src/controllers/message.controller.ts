@@ -8,6 +8,7 @@ export const getUserMessagesController = async (
 ) => {
   try {
     const { id } = req.query;
+    console.log('id: ', id);
 
     if (!id) {
       res
@@ -20,7 +21,7 @@ export const getUserMessagesController = async (
 
     res.json(messages);
   } catch (e) {
-    console.log('e: ', e);
+    console.log("e: ", e);
     res.status(HTTPCodes.INTERNAL_ERROR).json({
       msg: "Server can't load messages now"
     });

@@ -25,7 +25,7 @@ export const LoginForm = () => {
     });
 
     const user = await response.json();
-    console.log(user);
+
     setIsLoading(false);
     navigate(`/profile/${user.id}`);
   };

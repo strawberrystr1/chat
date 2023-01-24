@@ -9,3 +9,7 @@ export interface IUsersWithMessages {
   users: IUser[];
   messages: IMessage[];
 }
+
+export interface IProfilePageData extends IUsersWithMessages {
+  currentUser: IUser
+}
